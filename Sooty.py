@@ -438,21 +438,24 @@ def repChecker(ip):
     if response.status_code == 200:
         try:
             result = response.json()
+            tot = result['total']
+            pos = 0
+            avg = 0
             for each in result:
-                tot = result['total']
-                if result['positives'] != 0:
+                if (result['positives'] != 0):
                     pos = pos + 1
                 avg = pos/tot
-                print("   No of Databases Checked: " + str(tot))
-                print("   No of Reportings: " + str(pos))
-                print("   Average Score:    " + str(avg))
-                print("   VirusTotal Report Link: " + result['permalink'])
-                f.write("\n\n No of Databases Checked: " + str(tot))
-                f.write("\n No of Reportings: " + str(pos))
-                f.write("\n Average Score: " + str(avg))
-                f.write("\n VirusTotal Report Link: " + result['permalink'])
-        except:
+            print("   No of Databases Checked: " + str(tot))
+            print("   No of Reportings: " + str(pos))
+            print("   Average Score:    " + str(avg))
+            print("   VirusTotal Report Link: " + result['permalink'])
+            f.write("\n\n No of Databases Checked: " + str(tot))
+            f.write("\n No of Reportings: " + str(pos))
+            f.write("\n Average Score: " + str(avg))
+            f.write("\n VirusTotal Report Link: " + result['permalink'])
+        except Exception as e:
             print('error')
+            print(e)
     else:
         print(" There's been an error, check your API Key or VirusTotal may be down")
 
