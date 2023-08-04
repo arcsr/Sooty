@@ -21,7 +21,7 @@ import strictyaml
 import urllib.parse
 import requests
 from ipwhois import IPWhois
-import tkinter
+import tk as tkinter 
 import sys
 
 from Modules import iplists
