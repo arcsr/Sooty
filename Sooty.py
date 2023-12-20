@@ -446,8 +446,8 @@ def repChecker(ip):
     params = {'apikey': configvars.data['VT_API_KEY'], 'resource': wIP}
     if(flag == '4' or flag == 'host'):
         response = requests.get(url, params=params)
-    pos = 0 # Total positives found in VT
-    tot = 0 # Total number of scans
+        pos = 0 # Total positives found in VT
+        tot = 0 # Total number of scans
         if response.status_code == 200:
             try:
                 result = response.json()
