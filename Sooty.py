@@ -19,6 +19,7 @@ import os
 import socket
 import strictyaml
 import urllib.parse
+import ipaddress
 import requests
 from ipwhois import IPWhois
 import tk as tkinter 
@@ -398,6 +399,7 @@ def repChecker(ip):
     print(" R E P U T A T I O N     C H E C K ")
     print(" --------------------------------- ")
     wIP = ''
+    flag = 'host'
     if not ip:
         rawInput = input("Enter IP, URL or Email Address: ").split()
         ip = str(rawInput[0])
@@ -408,7 +410,17 @@ def repChecker(ip):
         else:
 
             whoIsPrint(ip)
-            wIP = socket.gethostbyname(ip)
+            
+            if(ipaddress.ip_address(ip)):
+                try:
+                    ipaddress.IPv4Address(ip)
+                    wIP = socket.gethostbyaddr(ip)
+                    flag = '4'
+                except ipaddress.AddressValueError as e:
+                    wIP = socket.getaddrinfo(ip, None, socket.AF_INET6)
+                    flag = '6'
+            else:
+                wIP = socket.gethostbyname(ip)
     now = datetime.now()
 
     today = now.strftime("%m-%d-%Y")
@@ -432,36 +444,37 @@ def repChecker(ip):
 
     url = 'https://www.virustotal.com/vtapi/v2/url/report'
     params = {'apikey': configvars.data['VT_API_KEY'], 'resource': wIP}
-    response = requests.get(url, params=params)
+    if(flag == '4' or flag == 'host'):
+        response = requests.get(url, params=params)
     pos = 0 # Total positives found in VT
     tot = 0 # Total number of scans
-    if response.status_code == 200:
-        try:
-            result = response.json()
-            tot = result['total']
-            pos = 0
-            avg = 0
-            for each in result:
-                if (result['positives'] != 0):
-                    pos = pos + 1
-                avg = pos/tot
-            print("   No of Databases Checked: " + str(tot))
-            print("   No of Reportings: " + str(pos))
-            print("   Average Score:    " + str(avg))
-            print("   VirusTotal Report Link: " + result['permalink'])
-            f.write("\n\n No of Databases Checked: " + str(tot))
-            f.write("\n No of Reportings: " + str(pos))
-            f.write("\n Average Score: " + str(avg))
-            f.write("\n VirusTotal Report Link: " + result['permalink'])
-        except Exception as e:
-            print('error')
-            print(e)
-    else:
-        print(" There's been an error, check your API Key or VirusTotal may be down")
+        if response.status_code == 200:
+            try:
+                result = response.json()
+                tot = result['total']
+                pos = 0
+                avg = 0
+                for each in result:
+                    if (result['positives'] != 0):
+                        pos = pos + 1
+                    avg = pos/tot
+                print("   No of Databases Checked: " + str(tot))
+                print("   No of Reportings: " + str(pos))
+                print("   Average Score:    " + str(avg))
+                print("   VirusTotal Report Link: " + result['permalink'])
+                f.write("\n\n No of Databases Checked: " + str(tot))
+                f.write("\n No of Reportings: " + str(pos))
+                f.write("\n Average Score: " + str(avg))
+                f.write("\n VirusTotal Report Link: " + result['permalink'])
+            except Exception as e:
+                print('error')
+                print(e)
+        else:
+            print(" There's been an error, check your API Key or VirusTotal may be down")
 
 
     try:
-        TOR_URL = "https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=1.1.1.1"
+        TOR_URL = f'https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip={wIP}'
         req = requests.get(TOR_URL)
         print("\n TOR Exit Node Report: ")
         f.write("\n\n --------------------------------- ")
