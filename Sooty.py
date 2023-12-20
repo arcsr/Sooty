@@ -414,11 +414,11 @@ def repChecker(ip):
             if(ipaddress.ip_address(ip)):
                 try:
                     ipaddress.IPv4Address(ip)
-                    wIP = socket.gethostbyaddr(ip)
+                    wIP = ip
                     flag = '4'
                 except ipaddress.AddressValueError as e:
-                    wIP = socket.getaddrinfo(ip, None, socket.AF_INET6)
                     flag = '6'
+                    wIP = ip
             else:
                 wIP = socket.gethostbyname(ip)
     now = datetime.now()
@@ -474,7 +474,7 @@ def repChecker(ip):
 
 
     try:
-        TOR_URL = f'https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip={wIP}'
+        TOR_URL = f'https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip={ip}'
         req = requests.get(TOR_URL)
         print("\n TOR Exit Node Report: ")
         f.write("\n\n --------------------------------- ")
