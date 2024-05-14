@@ -409,6 +409,20 @@ def repChecker(ip):
             analyzeEmail(''.join(s))
         else:
 
+            try:
+                ipaddress.ip_address(ip)
+            except:
+                uri_path = []
+                if('https:' in ip):
+                    proto, url = ip.split(':')
+                    url = url.replace('//','')
+                    print(f'url is {url}')
+                    uri_path = url.split('/')
+                    print(f'path is {uri_path}')
+                    host = uri_path[0]
+                    print(f'host is {host}')
+                    ip = socket.gethostbyname(host)
+                    print(f'ip is {ip}')
             whoIsPrint(ip)
             
             if(ipaddress.ip_address(ip)):
@@ -498,37 +512,37 @@ def repChecker(ip):
         print("There is an error with checking for Tor exit nodes:\n" + str(e))
 
 
-    print("\n Checking BadIP's... ")
-    f.write("\n\n ---------------------------------")
-    f.write("\n BadIP's Report : ")
-    f.write("\n --------------------------------- \n")
-
-    try:
-        BAD_IPS_URL = 'https://www.badips.com/get/info/' + wIP
-        response = requests.get(BAD_IPS_URL)
-        if response.status_code == 200:
-            result = response.json()
-            print("  " + str(result['suc']))
-            print("  Total Reports : " + str(result['ReporterCount']['sum']))
-            print("\n  IP has been reported in the following Categories:")
-            f.write("  " + str(result['suc']))
-            f.write("\n  Total Reports : " + str(result['ReporterCount']['sum']))
-            f.write("\n  IP has been reported in the following Categories:")
-            for each in result['LastReport']:
-                timeReport = datetime.fromtimestamp(result['LastReport'].get(each))
-                print('   - ' + each + ': ' + str(timeReport))
-                f.write('\n   - ' + each + ': ' + str(timeReport))
-        else:
-            print('  Error reaching BadIPs')
-    except:
-        print('  IP not found') #Defaults to IP not found - not actually accurate
-        f.write('\n  IP not found')
-
-    print("\n ABUSEIPDB Report:")
-    f.write("\n\n ---------------------------------")
-    f.write("\n ABUSEIPDB Report:")
-    f.write("\n ---------------------------------\n")
-
+#    print("\n Checking BadIP's... ")
+#    f.write("\n\n ---------------------------------")
+#    f.write("\n BadIP's Report : ")
+#    f.write("\n --------------------------------- \n")
+#
+#    try:
+#        BAD_IPS_URL = 'https://www.badips.com/get/info/' + wIP
+#        response = requests.get(BAD_IPS_URL)
+#        if response.status_code == 200:
+#            result = response.json()
+#            print("  " + str(result['suc']))
+#            print("  Total Reports : " + str(result['ReporterCount']['sum']))
+#            print("\n  IP has been reported in the following Categories:")
+#            f.write("  " + str(result['suc']))
+#            f.write("\n  Total Reports : " + str(result['ReporterCount']['sum']))
+#            f.write("\n  IP has been reported in the following Categories:")
+#            for each in result['LastReport']:
+#                timeReport = datetime.fromtimestamp(result['LastReport'].get(each))
+#                print('   - ' + each + ': ' + str(timeReport))
+#                f.write('\n   - ' + each + ': ' + str(timeReport))
+#        else:
+#            print('  Error reaching BadIPs')
+#    except:
+#        print('  IP not found') #Defaults to IP not found - not actually accurate
+#        f.write('\n  IP not found')
+#
+#    print("\n ABUSEIPDB Report:")
+#    f.write("\n\n ---------------------------------")
+#    f.write("\n ABUSEIPDB Report:")
+#    f.write("\n ---------------------------------\n")
+#
     try:
         AB_URL = 'https://api.abuseipdb.com/api/v2/check'
         days = configvars.data['ABIP_DAYS']
